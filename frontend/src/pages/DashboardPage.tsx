@@ -7,6 +7,7 @@ import RecordCard from '../components/RecordCard';
 import RecordForm from '../components/RecordForm';
 import VoiceRecorder from '../components/VoiceRecorder';
 import WelcomeGuide from '../components/WelcomeGuide';
+import TestFeature from '../components/TestFeature';
 import toast from 'react-hot-toast';
 
 type SortOption = 'newest' | 'oldest' | 'title' | 'title-desc';
@@ -260,6 +261,9 @@ const DashboardPage: React.FC = () => {
 
       {/* Main Content - Full Screen */}
       <div className="container-responsive py-responsive">
+        {/* Test Feature Component */}
+        <TestFeature />
+        
         {/* Header with stats */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
