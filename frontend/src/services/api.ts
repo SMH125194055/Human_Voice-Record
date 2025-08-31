@@ -3,7 +3,7 @@ import { User, Record, CreateRecordRequest, UpdateRecordRequest } from '../types
 
 // Simple API URL based on environment
 const API_BASE_URL = import.meta.env.PROD 
-  ? 'https://hvr-huzaifa-backend-oezgnww8w-huzaifas-projects-044fb73a.vercel.app/api/v1'
+  ? 'https://hvr-huzaifa-backend.vercel.app/api/v1'
   : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1');
 
 class ApiService {
