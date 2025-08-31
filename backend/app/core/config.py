@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = Field(default=30)
     
     # Google OAuth Configuration
-    google_client_id: str = "774653109986-mt4kacjdb5t5j34bgq05lnd6f360s67b.apps.googleusercontent.com"
+    google_client_id: str = Field(default="774653109986-mt4kacjdb5t5j34bgq05lnd6f360s67b.apps.googleusercontent.com")
     google_client_secret: str = None
     google_redirect_uri: str = None
 
