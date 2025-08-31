@@ -18,13 +18,8 @@ async def google_auth():
     """Initiate Google OAuth flow"""
     # Use different redirect URIs based on environment
     if os.getenv("VERCEL"):
-        # Production - use dynamic URL based on current deployment
-        vercel_url = os.getenv("VERCEL_URL", "")
-        if vercel_url:
-            redirect_uri = f"https://{vercel_url}/api/v1/auth/google/callback"
-        else:
-            # Fallback to current deployment URL
-            redirect_uri = "https://hvr-huzaifa-backend-33zq92ebl-huzaifas-projects-044fb73a.vercel.app/api/v1/auth/google/callback"
+        # Production - use consistent URL
+        redirect_uri = "https://hvr-huzaifa-backend.vercel.app/api/v1/auth/google/callback"
     else:
         # Development - use localhost
         redirect_uri = "http://localhost:8000/api/v1/auth/google/callback"
@@ -47,13 +42,8 @@ async def google_callback(code: str):
     try:
         # Use the same redirect URI logic as the auth request
         if os.getenv("VERCEL"):
-            # Production - use dynamic URL based on current deployment
-            vercel_url = os.getenv("VERCEL_URL", "")
-            if vercel_url:
-                redirect_uri = f"https://{vercel_url}/api/v1/auth/google/callback"
-            else:
-                # Fallback to current deployment URL
-                redirect_uri = "https://hvr-huzaifa-backend-33zq92ebl-huzaifas-projects-044fb73a.vercel.app/api/v1/auth/google/callback"
+            # Production - use consistent URL
+            redirect_uri = "https://hvr-huzaifa-backend.vercel.app/api/v1/auth/google/callback"
         else:
             # Development - use localhost
             redirect_uri = "http://localhost:8000/api/v1/auth/google/callback"

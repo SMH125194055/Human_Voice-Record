@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { User, Record, CreateRecordRequest, UpdateRecordRequest } from '../types';
 
-// Simple API URL based on environment
+// Fixed API URL - no more URL change issues
 const API_BASE_URL = import.meta.env.PROD 
   ? 'https://hvr-huzaifa-backend.vercel.app/api/v1'
   : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1');
