@@ -5,6 +5,10 @@ from app.services.user_service import user_service
 from app.models.user import UserCreate, User
 from app.core.config import settings
 import httpx
+import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -12,14 +16,28 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 @router.get("/google")
 async def google_auth():
     """Initiate Google OAuth flow"""
+    # Use different redirect URIs based on environment
+    if os.getenv("VERCEL"):
+        # Production - use dynamic URL based on current deployment
+        vercel_url = os.getenv("VERCEL_URL", "")
+        if vercel_url:
+            redirect_uri = f"https://{vercel_url}/api/v1/auth/google/callback"
+        else:
+            # Fallback to current deployment URL
+            redirect_uri = "https://hvr-huzaifa-backend-33zq92ebl-huzaifas-projects-044fb73a.vercel.app/api/v1/auth/google/callback"
+    else:
+        # Development - use localhost
+        redirect_uri = "http://localhost:8000/api/v1/auth/google/callback"
+    
     google_auth_url = (
         f"https://accounts.google.com/o/oauth2/v2/auth?"
         f"client_id={settings.google_client_id}&"
-        f"redirect_uri={settings.google_redirect_uri}&"
+        f"redirect_uri={redirect_uri}&"
         f"response_type=code&"
         f"scope=openid email profile&"
         f"access_type=offline"
     )
+    logger.info(f"Generated auth URL with redirect_uri: {redirect_uri}")
     return {"auth_url": google_auth_url}
 
 
@@ -27,6 +45,19 @@ async def google_auth():
 async def google_callback(code: str):
     """Handle Google OAuth callback"""
     try:
+        # Use the same redirect URI logic as the auth request
+        if os.getenv("VERCEL"):
+            # Production - use dynamic URL based on current deployment
+            vercel_url = os.getenv("VERCEL_URL", "")
+            if vercel_url:
+                redirect_uri = f"https://{vercel_url}/api/v1/auth/google/callback"
+            else:
+                # Fallback to current deployment URL
+                redirect_uri = "https://hvr-huzaifa-backend-33zq92ebl-huzaifas-projects-044fb73a.vercel.app/api/v1/auth/google/callback"
+        else:
+            # Development - use localhost
+            redirect_uri = "http://localhost:8000/api/v1/auth/google/callback"
+        
         # Exchange code for tokens
         token_url = "https://oauth2.googleapis.com/token"
         token_data = {
@@ -34,7 +65,7 @@ async def google_callback(code: str):
             "client_secret": settings.google_client_secret,
             "code": code,
             "grant_type": "authorization_code",
-            "redirect_uri": settings.google_redirect_uri,
+            "redirect_uri": redirect_uri,
         }
         
         async with httpx.AsyncClient() as client:
@@ -67,8 +98,11 @@ async def google_callback(code: str):
         # Create access token
         access_token = create_access_token(data={"sub": user.id})
         
-        # Redirect to frontend with token
-        frontend_url = "http://localhost:3000/auth/callback"
+        # Redirect to frontend with token - use production URL for Vercel, localhost for development
+        if os.getenv("VERCEL"):
+            frontend_url = "https://hvr-huzaifa-frontend.vercel.app/auth/callback"
+        else:
+            frontend_url = "http://localhost:3000/auth/callback"
         return RedirectResponse(url=f"{frontend_url}?token={access_token}")
         
     except Exception as e:

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, LogOut, User, Menu, X, Mic, MicOff, Search, Filter, SortAsc, SortDesc, Grid, List, HelpCircle, FileText } from 'lucide-react';
+import { Plus, LogOut, User, X, Mic, MicOff, Search, Grid, List, HelpCircle, FileText } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { apiService } from '../services/api';
 import { Record, CreateRecordRequest } from '../types';

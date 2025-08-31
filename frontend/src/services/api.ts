@@ -1,7 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 import { User, Record, CreateRecordRequest, UpdateRecordRequest } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+// Simple API URL based on environment
+const API_BASE_URL = import.meta.env.PROD 
+  ? 'https://hvr-huzaifa-backend-oezgnww8w-huzaifas-projects-044fb73a.vercel.app/api/v1'
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1');
 
 class ApiService {
   private api: AxiosInstance;
