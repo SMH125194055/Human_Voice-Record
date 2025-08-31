@@ -19,7 +19,7 @@ async def google_auth():
     # Use different redirect URIs based on environment
     if os.getenv("VERCEL"):
         # Production - use consistent URL
-        redirect_uri = "https://hvr-huzaifa-backend-hul5m1kgs-huzaifas-projects-044fb73a.vercel.app/api/v1/auth/google/callback"
+        redirect_uri = "https://hvr-backend.vercel.app/api/v1/auth/google/callback"
     else:
         # Development - use localhost
         redirect_uri = "http://localhost:8000/api/v1/auth/google/callback"
@@ -43,7 +43,7 @@ async def google_callback(code: str):
         # Use the same redirect URI logic as the auth request
         if os.getenv("VERCEL"):
             # Production - use consistent URL
-            redirect_uri = "https://hvr-huzaifa-backend-hul5m1kgs-huzaifas-projects-044fb73a.vercel.app/api/v1/auth/google/callback"
+            redirect_uri = "https://hvr-backend.vercel.app/api/v1/auth/google/callback"
         else:
             # Development - use localhost
             redirect_uri = "http://localhost:8000/api/v1/auth/google/callback"
@@ -90,7 +90,7 @@ async def google_callback(code: str):
         
         # Redirect to frontend with token - use production URL for Vercel, localhost for development
         if os.getenv("VERCEL"):
-            frontend_url = "https://hvr-huzaifa-frontend.vercel.app/auth/callback"
+            frontend_url = "https://hvr-frontend.vercel.app/auth/callback"
         else:
             frontend_url = "http://localhost:3000/auth/callback"
         return RedirectResponse(url=f"{frontend_url}?token={access_token}")
