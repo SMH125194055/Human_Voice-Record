@@ -100,6 +100,44 @@ class StorageService:
             import traceback
             traceback.print_exc()
             return None
+
+    async def upload_audio_content(self, user_id: str, record_id: str, file_content: bytes, filename: str, content_type: str) -> Optional[str]:
+        """Upload audio content directly to storage bucket"""
+        try:
+            # Ensure bucket exists (but don't fail if we can't create it)
+            await self.create_bucket_if_not_exists()
+            
+            # Create user-specific folder path
+            folder_path = f"users/{user_id}/records/{record_id}"
+            storage_path = f"{folder_path}/{filename}"
+            
+            print(f"📁 Uploading to: {storage_path}")
+            print(f"📊 File size: {len(file_content)} bytes")
+            
+            # Upload to Supabase Storage with proper content type
+            result = self.db.storage.from_(self.bucket_name).upload(
+                storage_path,
+                file_content,
+                {"content-type": content_type}
+            )
+            
+            if result:
+                # Get public URL and clean it (remove trailing ? if present)
+                public_url = self.db.storage.from_(self.bucket_name).get_public_url(storage_path)
+                # Clean the URL by removing trailing question mark
+                if public_url.endswith('?'):
+                    public_url = public_url[:-1]
+                print(f"✅ Upload successful: {public_url}")
+                return public_url
+            else:
+                print("❌ Upload failed - no result returned")
+                return None
+            
+        except Exception as e:
+            print(f"❌ Error uploading to storage: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
     
     async def delete_audio_file(self, user_id: str, record_id: str, filename: str) -> bool:
         """Delete audio file from storage"""

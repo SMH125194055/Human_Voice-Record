@@ -95,29 +95,22 @@ async def upload_audio(
             detail="File must be an audio file"
         )
     
-    # Create temporary file
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_extension = os.path.splitext(audio_file.filename)[1]
-    temp_filename = f"{record_id}_{timestamp}{file_extension}"
-    temp_file_path = os.path.join(settings.upload_dir, temp_filename)
-    
-    # Save file temporarily
     try:
-        async with aiofiles.open(temp_file_path, "wb") as f:
-            content = await audio_file.read()
-            await f.write(content)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to save file: {str(e)}"
-        )
-    
-    try:
-        # Update record with audio file (this will upload to Supabase Storage)
-        updated_record = await record_service.update_audio_file(
+        # Read file content directly (no local file saving)
+        content = await audio_file.read()
+        
+        # Create filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_extension = os.path.splitext(audio_file.filename)[1]
+        filename = f"{record_id}_{timestamp}{file_extension}"
+        
+        # Upload directly to Supabase Storage
+        updated_record = await record_service.upload_audio_to_storage(
             record_id, 
             current_user.id, 
-            temp_file_path
+            content,
+            filename,
+            audio_file.content_type
         )
         
         if not updated_record:
@@ -132,13 +125,11 @@ async def upload_audio(
             "record": updated_record
         }
     
-    finally:
-        # Clean up temporary file
-        try:
-            if os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
-        except Exception:
-            pass
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload audio: {str(e)}"
+        )
 
 
 @router.get("/{record_id}/audio")

@@ -86,6 +86,27 @@ class RecordService:
             print(f"Error updating audio file: {e}")
             return None
 
+    async def upload_audio_to_storage(self, record_id: str, user_id: str, file_content: bytes, filename: str, content_type: str) -> Optional[Record]:
+        """Upload audio file directly to Supabase Storage"""
+        try:
+            # Upload to Supabase Storage
+            storage_url = await storage_service.upload_audio_content(user_id, record_id, file_content, filename, content_type)
+            
+            if storage_url:
+                update_data = {
+                    "audio_file_path": storage_url,
+                    "updated_at": "now()"
+                }
+                
+                result = self.db.table("records").update(update_data).eq("id", record_id).eq("user_id", user_id).execute()
+                if result.data:
+                    return Record(**result.data[0])
+            
+            return None
+        except Exception as e:
+            print(f"Error uploading audio to storage: {e}")
+            return None
+
 
 # Service instance
 record_service = RecordService()
